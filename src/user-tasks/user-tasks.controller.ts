@@ -59,7 +59,7 @@ export class UserTasksController {
     description: 'Task assignment created successfully',
   })
   create(@Body() dto: CreateUserTasksDto, @Req() req: { user: LoggedUser }) {
-    return this.userTasksService.create(dto, req.user.sub);
+    return this.userTasksService.create(dto, req.user.sub, req.user.name);
   }
 
   @Patch(':id')

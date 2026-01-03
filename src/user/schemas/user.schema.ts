@@ -1,6 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsString, MinLength } from 'class-validator';
+import {
+  IsEmail,
+  IsString,
+  MinLength,
+  IsOptional,
+  Length,
+} from 'class-validator';
 import { Role } from 'src/common/enums/role.enum';
 import mongoose, { Document } from 'mongoose';
 
@@ -22,6 +28,17 @@ export class User {
   @Prop({ required: true, unique: true })
   @IsEmail()
   email: string;
+
+  @ApiProperty({
+    description: 'The phone number of the user',
+    example: '+1234567890',
+    required: false,
+  })
+  @Prop()
+  @IsOptional()
+  @IsString()
+  @Length(7, 20)
+  phone?: string;
 
   @ApiProperty()
   @Prop({ required: true })

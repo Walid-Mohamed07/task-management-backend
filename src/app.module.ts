@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { ChatModule } from './chat/chat.module';
 import { UserModule } from './user/user.module';
 import { TasksModule } from './tasks/tasks.module';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -35,6 +36,7 @@ import { UserTasksModule } from './user-tasks/user-tasks.module';
     AuthModule,
     RoleModule,
     UserModule,
+    ChatModule,
     TasksModule,
     UserTasksModule,
   ],

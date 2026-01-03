@@ -6,6 +6,7 @@ import { UserTask, UserTaskSchema } from './schemas/user-task.schema';
 import { JwtModule } from '@nestjs/jwt';
 import { AuthModule } from 'src/auth/auth.module';
 import { UserModule } from 'src/user/user.module';
+import { NotificationsModule } from 'src/notifications/notifications.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { UserModule } from 'src/user/user.module';
     ]),
     forwardRef(() => AuthModule),
     forwardRef(() => UserModule),
+    forwardRef(() => NotificationsModule),
   ],
   controllers: [UserTasksController],
   providers: [UserTasksService],

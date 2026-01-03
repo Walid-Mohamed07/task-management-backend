@@ -25,10 +25,8 @@ export class UserService {
     }
 
     // Generate a unique filename and save the file
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-member-access
     filename = `${uuidv4()}-${image.originalname}`;
     const filepath = path.join(uploadDir, filename);
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-argument, @typescript-eslint/no-unsafe-member-access
     fs.writeFileSync(filepath, image.buffer);
 
     return `${imageStoragePath}${filename}`;
@@ -56,7 +54,10 @@ export class UserService {
   }
 
   async findAll(): Promise<User[]> {
-    return this.userModel.find().populate('role', { _id: 0, name: 1 });
+    return this.userModel
+      .find()
+      .select('-password')
+      .populate('role', { _id: 0, name: 1 });
   }
 
   async findOne(id: string): Promise<User> {
@@ -77,27 +78,39 @@ export class UserService {
   async update(
     id: string,
     updateUserDto: UpdateUserDto,
-    profilePicture: Express.Multer.File,
+    profilePicture?: Express.Multer.File,
   ) {
     const isValid = mongoose.Types.ObjectId.isValid(id);
 
     if (!isValid) throw new NotFoundException(`Invalid ID!`);
+
     const hashedPassword = updateUserDto.password
       ? await bcrypt.hash(updateUserDto.password, 10)
       : undefined;
+
+    // Build the update object dynamically
+    const updateData: Record<string, any> = {
+      username: updateUserDto.name,
+      email: updateUserDto.email,
+      phone: updateUserDto.phone,
+      role: updateUserDto.role,
+    };
+
+    // Only add password if it was provided
+    if (hashedPassword) {
+      updateData.password = hashedPassword;
+    }
+
+    // Only update profilePicture if a new file was provided
+    if (profilePicture) {
+      updateData.profilePicture = this.storeUserImage(profilePicture);
+    }
+
     const existingUser = await this.userModel
       .findByIdAndUpdate(
         { _id: id },
         {
-          $set: {
-            username: updateUserDto.name,
-            email: updateUserDto.email,
-            password: hashedPassword,
-            role: updateUserDto.role,
-            profilePicture: profilePicture
-              ? this.storeUserImage(profilePicture)
-              : 'unknown.webp',
-          },
+          $set: updateData,
         },
         { new: true },
       )

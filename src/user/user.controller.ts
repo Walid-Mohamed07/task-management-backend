@@ -41,8 +41,8 @@ export class UserController {
   }
 
   @Get()
-  @Roles(Role.Admin)
-  findAll() {
+  // @Roles(Role.Admin)
+  async findAll() {
     return this.userService.findAll();
   }
 
@@ -58,7 +58,7 @@ export class UserController {
   update(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
-    @UploadedFile() profilePicture: Express.Multer.File,
+    @UploadedFile() profilePicture?: Express.Multer.File,
   ) {
     return this.userService.update(id, updateUserDto, profilePicture);
   }
